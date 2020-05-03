@@ -28,7 +28,7 @@ app.get('/', (req, res) => {
   fetch(`${baseUrl}/${route}/${clanTag}/${endpoint}`, {
     method: 'GET',
     headers: {
-      'Authorization': `Bearer ${process.env.API_KEY}`,
+      'Authorization': `Bearer ${process.env.ROYALE_API_KEY}`,
       'Content-Type': 'application/json'
     }
   })
