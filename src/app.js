@@ -5,6 +5,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const { NODE_ENV } = require('./config');
 
+const fetch = require('node-fetch');
 const app = express();
 
 const morganOpt =
@@ -19,7 +20,23 @@ app.use(
 );
 
 app.get('/', (req, res) => {
-  res.send('Hello, world!');
+  const baseUrl = "https://api.clashroyale.com/v1";
+  const route = "clans";
+  const clanTag = "%238URQ0UR8"
+  const endpoint = "currentwar";
+  console.log(process.env.API_KEY);
+  fetch(`${baseUrl}/${route}/${clanTag}/${endpoint}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${process.env.API_KEY}`,
+      'Content-Type': 'application/json'
+    }
+  })
+    .then(fetchRes => fetchRes.json())
+    .then(data => {
+      res.send(data);
+    });
+
 });
 
 errorHandler = (err, req, res, next) => {
