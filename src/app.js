@@ -5,7 +5,8 @@ const cors = require('cors');
 const helmet = require('helmet');
 const { NODE_ENV } = require('./config');
 const app = express();
-const fetch = require('node-fetch');
+const cardsRouter = require('./cards/cards-router');
+const warRouter = require('./war/war-router');
 
 const morganOpt =
   ( NODE_ENV === 'production' )
@@ -19,24 +20,27 @@ app.use(
 );
 
 app.get('/', (req, res) => {
-  const baseUrl = "https://proxy.royaleapi.dev/v1";
-  const route = "clans";
-  const clanTag = "%238URQ0UR8"
-  const endpoint = "currentwar";
+  // const baseUrl = "https://proxy.royaleapi.dev/v1";
+  // const route = "clans";
+  // const clanTag = "%238URQ0UR8"
+  // const endpoint = "currentwar";
 
-  fetch(`${baseUrl}/${route}/${clanTag}/${endpoint}`, {
-    method: 'GET',
-    headers: {
-      'Authorization': 'Bearer ' + process.env.ROYALE_API_KEY,
-      'Content-Type': 'application/json'
-    }
-  })
-    .then(fetchRes => fetchRes.json())
-    .then(data => {
-      res.send(data);
-    });
-
+  // fetch(`${baseUrl}/${route}/${clanTag}/${endpoint}`, {
+  //   method: 'GET',
+  //   headers: {
+  //     'Authorization': 'Bearer ' + process.env.ROYALE_API_KEY,
+  //     'Content-Type': 'application/json'
+  //   }
+  // })
+  //   .then(fetchRes => fetchRes.json())
+  //   .then(data => {
+  //     res.status(200).send(data);
+  //   });
+  res.send('Server is up');
 });
+
+app.use('/api/cards', cardsRouter);
+app.use('/api/war', warRouter);
 
 errorHandler = (err, req, res, next) => {
   let response;
