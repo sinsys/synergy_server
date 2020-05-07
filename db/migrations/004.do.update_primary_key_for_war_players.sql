@@ -1,2 +1,0 @@
-ALTER TABLE war_players
-  ADD COLUMN myidx TEXT UNIQUE NOT NULL;

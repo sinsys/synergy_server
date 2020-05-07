@@ -20,22 +20,6 @@ app.use(
 );
 
 app.get('/', (req, res) => {
-  // const baseUrl = "https://proxy.royaleapi.dev/v1";
-  // const route = "clans";
-  // const clanTag = "%238URQ0UR8"
-  // const endpoint = "currentwar";
-
-  // fetch(`${baseUrl}/${route}/${clanTag}/${endpoint}`, {
-  //   method: 'GET',
-  //   headers: {
-  //     'Authorization': 'Bearer ' + process.env.ROYALE_API_KEY,
-  //     'Content-Type': 'application/json'
-  //   }
-  // })
-  //   .then(fetchRes => fetchRes.json())
-  //   .then(data => {
-  //     res.status(200).send(data);
-  //   });
   res.send('Server is up');
 });
 

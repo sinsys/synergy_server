@@ -4,12 +4,35 @@ const util = require('util');
 const WarService = {
 
   // DATABASE
-  getWars: (db) => {
+  getWars: (db, clanTag) => {
     return (
       db
-        .from('cards')
+        .from('wars')
         .select('*')
+        .where('clan_tag', clanTag)
     );
+  },
+
+  getPlayers: (db, clanTag) => {
+    return (
+      db
+        .from('war_players')
+        .select('name')
+        .where('clan_tag', clanTag)
+    );
+  },
+
+  getCurrentWar: (clanTag) => {
+    const fetchUrl = `${BASE_URL}/clans/%23${clanTag}/currentwar`;
+    return (
+      fetch(fetchUrl, {
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer ' + process.env.ROYALE_API_KEY,
+          'Content-Type': 'application/json'
+        }
+      })
+    )
   },
 
   addWars: (db, wars) => {
@@ -29,16 +52,17 @@ const WarService = {
   },
 
   // REMOTE API
-  getRemoteWars: (clanTag) => {
-    let fetchUrl = `${BASE_URL}/clans/%23${clanTag}/warlog`;
+  getRemoteWars: (clanTags) => {
+    let fetchUrls = clanTags.map(tag => `${BASE_URL}/clans/%23${tag}/warlog`);
+    const headers = {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer ' + process.env.ROYALE_API_KEY,
+        'Content-Type': 'application/json'
+      }
+    };
     return (
-      fetch(fetchUrl, {
-        method: 'GET',
-        headers: {
-          'Authorization': 'Bearer ' + process.env.ROYALE_API_KEY,
-          'Content-Type': 'application/json'
-        }
-      })
+      Promise.all(fetchUrls.map(fetchUrl => fetch(fetchUrl, headers)))
     );
   }
 }
