@@ -1,64 +1,39 @@
 // Router - projects
 const { Router } = require('express');
-const clanRouter = Router();
-const { BASE_URL } = require('../config');
+const playerRouter = Router();
 // Services
-const ClanService = require('./clan-service');
-const clans = {
-  'Synergy': '809R8PG8',
-  'Synergy Fusion': '8URQ0UR8',
-  'Synergy Union': '8VVGG08G',
-  'Synergy Rising': 'P9UY2Y0U',
-  'Synergy Wrath': '9UG8LG0U',
-  'Synergy Reborn': '9LYPC809'
-};
+const PlayerService = require('./player-service');
+// const clans = {
+//   'Synergy': '809R8PG8',
+//   'Synergy Fusion': '8URQ0UR8',
+//   'Synergy Union': '8VVGG08G',
+//   'Synergy Rising': 'P9UY2Y0U',
+//   'Synergy Wrath': '9UG8LG0U',
+//   'Synergy Reborn': '9LYPC809'
+// };
 
-clanRouter
+playerRouter
   .route('/')
   .get( (req, res, next) => {
     res.send('Active');
   });
 
-clanRouter
-  .route('/update')
+playerRouter
+  .route('/all')
   .get( (req, res, next) => {
-    let clanTagList = Object.keys(clans).map(clan => clans[clan]);
-    ClanService.getRemoteClans(clanTagList)
-      .then(results => Promise.all(results.map(response => response.json())))
-      .then(allClanData => {
-        let response = {
-          clansInserted: 0
-        };
-        let normalizeClans = [];
-        allClanData.forEach(clan => {
-          let clanData = {
-            id: clan.tag.split('#')[1],
-            name: clan.name,
-            tag: clan.tag.split('#')[1],
-            description: clan.description,
-            clan_score: clan.clanScore,
-            clan_war_trophies: clan.clanWarTrophies,
-            location: clan.location.name,
-            required_trophies: clan.requiredTrophies,
-            donations_per_week: clan.donationsPerWeek,
-            members: clan.members,
-            avg_war_placement: null
-          };
-          normalizeClans.push(clanData);
-        });
-        const knexInst = req.app.get('db');
-        ClanService.addClans(
-          knexInst,
-          normalizeClans
-        )
-          .then((clanRows) => {
-            let response = {
-              success: true,
-              clanRows: clanRows.rowCount
-            };
-            return res.status(201).send(response);
-          });
-      })
+    PlayerService.getPlayers(req.app.get('db'))
+      .then(playersData => playersData.map(player => player.tag))
+      .then(data => res.json(data));
+  });
+
+playerRouter
+  .route('/:player_tag')
+  .get( (req, res, next) => {
+    let response = { data: {}};
+    // const knexInst = req.app.get('db');
+    PlayerService.getRemotePlayer(req.params.player_tag)
+      .then(playerData => playerData.json())
+      .then(data => res.json(data))
   });
 
 
@@ -126,4 +101,4 @@ clanRouter
     //   });
   // });
 
-module.exports = clanRouter;
+module.exports = playerRouter;

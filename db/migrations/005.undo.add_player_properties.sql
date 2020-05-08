@@ -1,0 +1,11 @@
+ALTER TABLE players
+  DROP COLUMN clan_tag,
+  DROP COLUMN exp_level,
+  DROP COLUMN trophies,
+  DROP COLUMN best_trophies,
+  DROP COLUMN donations,
+  DROP COLUMN donations_received,
+  DROP COLUMN clan_cards_collected,
+  DROP COLUMN favorite_card,
+  DROP COLUMN star_points,
+  DROP COLUMN war_streak;

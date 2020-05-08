@@ -1,6 +1,5 @@
 const { BASE_URL, ROYALE_API_KEY } = require('../config');
 const fetch = require('node-fetch');
-const util = require('util');
 const WarService = {
 
   // DATABASE
