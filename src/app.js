@@ -7,6 +7,8 @@ const { NODE_ENV } = require('./config');
 const app = express();
 const cardsRouter = require('./cards/cards-router');
 const warRouter = require('./war/war-router');
+const playerRouter = require('./players/player-router');
+const clanRouter = require('./clan/clan-router');
 
 const morganOpt =
   ( NODE_ENV === 'production' )
@@ -25,6 +27,8 @@ app.get('/', (req, res) => {
 
 app.use('/api/cards', cardsRouter);
 app.use('/api/war', warRouter);
+app.use('/api/player', playerRouter);
+app.use('/api/clan', clanRouter);
 
 errorHandler = (err, req, res, next) => {
   let response;
