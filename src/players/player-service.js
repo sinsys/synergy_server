@@ -24,6 +24,14 @@ const WarService = {
         .select('tag')
         .distinctOn('tag')
     )
+  },
+
+  addPlayer: (db, player) => {
+    let query = db.insert(player).into('players');
+    query += ` ON CONFLICT (id) DO NOTHING`;
+    return (
+      db.raw(query)
+    );
   }
   // DATABASE
   // getWars: (db, clanTag) => {
