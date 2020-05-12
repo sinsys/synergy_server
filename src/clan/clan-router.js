@@ -20,16 +20,22 @@ clanRouter
   });
 
 clanRouter
+  .route('/remote/:clan_tag')
+  .get( (req, res, next) => {
+    ClanService.getRemoteClan(req.params.clan_tag)
+      .then(results => results.json())
+      .then(data => res.json(data))
+  });
+
+clanRouter
   .route('/update')
   .get( (req, res, next) => {
     let clanTagList = Object.keys(clans).map(clan => clans[clan]);
+    const knexInst = req.app.get('db');
     ClanService.getRemoteClans(clanTagList)
       .then(results => Promise.all(results.map(response => response.json())))
       .then(allClanData => {
-        let response = {
-          clansInserted: 0
-        };
-        let normalizeClans = [];
+        const normalizeClans = [];
         allClanData.forEach(clan => {
           let clanData = {
             id: clan.tag.split('#')[1],
@@ -46,21 +52,47 @@ clanRouter
           };
           normalizeClans.push(clanData);
         });
-        const knexInst = req.app.get('db');
-        ClanService.addClans(
-          knexInst,
-          normalizeClans
-        )
-          .then((clanRows) => {
-            let response = {
-              success: true,
-              clanRows: clanRows.rowCount
-            };
-            return res.status(201).send(response);
-          });
-      })
-  });
-
+        ClanService.updateClans(knexInst, normalizeClans)
+          .then(response => res.json(response));
+      });
+    });
+      //   let response = {
+      //     clansInserted: 0
+      //   };
+      //   let normalizeClans = [];
+      //   let currentMembers = [];
+        // allClanData.forEach(clan => {
+        //   let clanData = {
+        //     id: clan.tag.split('#')[1],
+        //     name: clan.name,
+        //     tag: clan.tag.split('#')[1],
+        //     description: clan.description,
+        //     clan_score: clan.clanScore,
+        //     clan_war_trophies: clan.clanWarTrophies,
+        //     location: clan.location.name,
+        //     required_trophies: clan.requiredTrophies,
+        //     donations_per_week: clan.donationsPerWeek,
+        //     members: clan.members,
+        //     avg_war_placement: null
+        //   };
+        //   normalizeClans.push(clanData);
+      //     clan.memberList.forEach(member => {
+      //       currentMembers.push(member.tag.split('#')[1]);
+      //     });
+      //   });
+      //   const knexInst = req.app.get('db');
+      //   ClanService.addClans(
+      //     knexInst,
+      //     normalizeClans
+      //   )
+      //     .then((clanRows) => {
+      //       let response = {
+      //         success: true,
+      //         clanRows: clanRows.rowCount
+      //       };
+      //       return res.status(201).send(response);
+      //     });
+      // })
 
     // const clanTag = req.params.clan_tag;
     // WarService.getRemoteWars(clanTag)

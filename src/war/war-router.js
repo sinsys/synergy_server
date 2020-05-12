@@ -110,7 +110,7 @@ warRouter
 warRouter
   .route('/:clan_tag/players')
   .get( (req, res, next) => {
-    WarService.getPlayers(req.app.get('db'), req.params.clan_tag)
+    WarService.getPlayerTags(req.app.get('db'), req.params.clan_tag)
       .then(playerData => {
         res.json(playerData);
       })

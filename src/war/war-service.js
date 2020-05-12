@@ -12,7 +12,7 @@ const WarService = {
     );
   },
 
-  getPlayers: (db, clanTag) => {
+  getPlayerTags: (db, clanTag) => {
     return (
       db
         .from('war_players')
@@ -21,6 +21,15 @@ const WarService = {
     );
   },
 
+  getPlayers: (db, clanTag) => {
+    return (
+      db
+        .from('war_players')
+        .select('*')
+        .where('clan_tag', clanTag)
+    );
+  },
+  
   getCurrentWar: (clanTag) => {
     const fetchUrl = `${BASE_URL}/clans/%23${clanTag}/currentwar`;
     return (
