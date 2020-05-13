@@ -34,8 +34,18 @@ playerRouter
 playerRouter
   .route('/clan/:clan_tag')
   .get( (req, res, next) => {
-    PlayerService.getClanPlayerStats(req.app.get('db'), req.params.clan_tag)
-      .then(players => res.json(players));
+    RemoteService.getClanPlayers(req.params.clan_tag)
+      .then(response => response.json())
+      .then(members => {
+        return members.items.map(member => member.tag.split('#')[1]);
+      })
+      .then(memberTags => {
+        console.log(memberTags);
+        PlayerService.getPlayersStats(req.app.get('db'), memberTags)
+          .then(data => {
+            res.json(data);
+          });
+      });
   });
 
 playerRouter
@@ -105,59 +115,6 @@ playerRouter
         }, 50);
       })
   });
-// playerRouter
-//   .route('/update')
-//   .get( (req, res, next) => {
-//     ClanService.getRemoteClans()
-//         let count = playersArr.length; // 307
-//         let completed = 0;
-//         const queue = setInterval(() => {
-//           PlayerService.getRemotePlayer(playersArr[count - 1])
-//             .then(playerData => playerData.json())
-//             .then(player => {
-//               let playerCardPercs = getPlayerPercentages(player.cards);
-//               let newPlayer = {
-//                 id: player.tag.split('#')[1],
-//                 tag: player.tag.split('#')[1],
-//                 name: player.name,
-//                 role: player.role,
-//                 war_day_wins: player.warDayWins,
-//                 legendary_perc: playerCardPercs[0],
-//                 gold_perc: playerCardPercs[1],
-//                 clan_tag: player.clan.tag.split('#')[1],
-//                 exp_level: player.expLevel,
-//                 trophies: player.trophies,
-//                 best_trophies: player.bestTrophies,
-//                 donations: player.donations,
-//                 donations_received: player.donationsReceived,
-//                 clan_cards_collected: player.clanCardsCollected,
-//                 favorite_card: player.currentFavouriteCard.id,
-//                 star_points: player.starPoints,
-//                 war_streak: null
-//               };
-//               console.log(`Adding ${player.name}`);
-//               PlayerService.addPlayer(req.app.get('db'), newPlayer)
-//                 .then(() => {
-//                   console.log(`Player ${player.name} added...`);
-//                   completed += 1;
-//                   console.log(`Count: ${count}`);
-//                   console.log(`Completed: ${completed}`);
-//                 })
-//             })
-//             .catch(err => {
-//               completed+=1;
-//               console.log(`An error occured: ${err}`);
-//             });
-//           count-=1;
-//           if ( count <= 0 ) clearInterval(queue);
-//         }, 100);
-//         if ( completed >= playersArr.length - 1 ) {
-//           return (
-//             res.send("All players added")
-//           );
-//         }
-//       });
-//   });
 
 playerRouter
   .route('/:player_tag')

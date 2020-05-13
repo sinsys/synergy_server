@@ -53,6 +53,13 @@ const RemoteService = {
     );
   },
 
+  getClanPlayers: (tag) => {
+    let fetchUrl = `${BASE_URL}/clans/%23${tag}/members`;
+    return (
+      fetch(fetchUrl, RemoteService.headers)
+    );
+  },
+
   getClansPlayers: (tags) => {
     let fetchUrls = tags.map(tag => `${BASE_URL}/clans/%23${tag}/members`);
     return (

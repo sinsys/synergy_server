@@ -12,65 +12,28 @@ const WarService = {
     );
   },
 
-  getPlayerTags: (db, clanTag) => {
-    return (
-      db
-        .from('war_players')
-        .select('name')
-        .where('clan_tag', clanTag)
-    );
-  },
-
-  getPlayers: (db, clanTag) => {
+  getPlayers: (db, playerTags) => {
     return (
       db
         .from('war_players')
         .select('*')
-        .where('clan_tag', clanTag)
+        .whereIn('tag', playerTags)
     );
   },
-  
-  getCurrentWar: (clanTag) => {
-    const fetchUrl = `${BASE_URL}/clans/%23${clanTag}/currentwar`;
-    return (
-      fetch(fetchUrl, {
-        method: 'GET',
-        headers: {
-          'Authorization': 'Bearer ' + process.env.ROYALE_API_KEY,
-          'Content-Type': 'application/json'
-        }
-      })
-    )
-  },
 
-  addWars: (db, wars) => {
+  updateWars: (db, wars) => {
     let query = db.insert(wars).into('wars');
-    query += ` ON CONFLICT (id) DO NOTHING;`;
+    query += ` ON CONFLICT (id) DO NOTHING RETURNING *;`
     return (
       db.raw(query)
     );
   },
 
-  addPlayers: (db, players) => {
-    let query = db.insert(players).into('war_players');
-    query += ` ON CONFLICT (id) DO NOTHING;`;
+  updateWarPlayers: (db, warPlayers) => {
+    let query = db.insert(warPlayers).into('war_players');
+    query += ` ON CONFLICT (id) DO NOTHING RETURNING *;`;
     return (
       db.raw(query)
-    );
-  },
-
-  // REMOTE API
-  getRemoteWars: (clanTags) => {
-    let fetchUrls = clanTags.map(tag => `${BASE_URL}/clans/%23${tag}/warlog`);
-    const headers = {
-      method: 'GET',
-      headers: {
-        'Authorization': 'Bearer ' + process.env.ROYALE_API_KEY,
-        'Content-Type': 'application/json'
-      }
-    };
-    return (
-      Promise.all(fetchUrls.map(fetchUrl => fetch(fetchUrl, headers)))
     );
   }
 }
