@@ -1,14 +1,22 @@
 require('dotenv').config();
+
+// Configuration
 const express = require('express');
+const { NODE_ENV } = require('./config');
+
+// Middlewar
 const morgan = require('morgan');
 const cors = require('cors');
 const helmet = require('helmet');
-const { NODE_ENV } = require('./config');
-const app = express();
+
+// Routers
 const cardsRouter = require('./cards/cards-router');
 const warRouter = require('./war/war-router');
 const playerRouter = require('./players/player-router');
 const clanRouter = require('./clan/clan-router');
+const remoteRouter = require('./remote/remote-router');
+
+const app = express();
 
 const morganOpt =
   ( NODE_ENV === 'production' )
@@ -26,9 +34,10 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/cards', cardsRouter);
-app.use('/api/war', warRouter);
-app.use('/api/player', playerRouter);
-app.use('/api/clan', clanRouter);
+app.use('/api/wars', warRouter);
+app.use('/api/players', playerRouter);
+app.use('/api/clans', clanRouter);
+app.use('/api/remote', remoteRouter);
 
 errorHandler = (err, req, res, next) => {
   let response;

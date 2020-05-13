@@ -11,26 +11,31 @@ const ClanService = {
     );
   },
 
-  addClans: (db, clans) => {
-    let query = db.insert(clans).into('clans');
-    query += ` ON CONFLICT (id) DO NOTHING;`;
+  getClanTags: (db) => {
     return (
-      db.raw(query)
+      db
+        .from('clans')
+        .select('tag')
     );
   },
 
-  // REMOTE API
-  getRemoteClans: (clanTags) => {
-    let fetchUrls = clanTags.map(tag => `${BASE_URL}/clans/%23${tag}`);
-    const headers = {
-      method: 'GET',
-      headers: {
-        'Authorization': 'Bearer ' + process.env.ROYALE_API_KEY,
-        'Content-Type': 'application/json'
-      }
-    };
+  // Upsert all clans
+  updateClans: (db, clans) => {
+    let query = db.insert(clans).into('clans');
+    query += ` ON CONFLICT (id) DO UPDATE SET
+      name=EXCLUDED.name,
+      tag=EXCLUDED.tag,
+      description=EXCLUDED.description,
+      clan_score=EXCLUDED.clan_score,
+      clan_war_trophies=EXCLUDED.clan_war_trophies,
+      location=EXCLUDED.location,
+      required_trophies=EXCLUDED.required_trophies,
+      donations_per_week=EXCLUDED.donations_per_week,
+      members=EXCLUDED.members,
+      avg_war_placement=EXCLUDED.avg_war_placement
+    RETURNING *;`;
     return (
-      Promise.all(fetchUrls.map(fetchUrl => fetch(fetchUrl, headers)))
+      db.raw(query)
     );
   }
 }

@@ -3,14 +3,19 @@ const { Router } = require('express');
 const playerRouter = Router();
 // Services
 const PlayerService = require('./player-service');
-// const clans = {
-//   'Synergy': '809R8PG8',
-//   'Synergy Fusion': '8URQ0UR8',
-//   'Synergy Union': '8VVGG08G',
-//   'Synergy Rising': 'P9UY2Y0U',
-//   'Synergy Wrath': '9UG8LG0U',
-//   'Synergy Reborn': '9LYPC809'
-// };
+const ClanService = require('../clan/clan-service');
+const RemoteService = require('../remote/remote-service');
+
+const { getPlayerPercentages } = require('../utils/player-utility');
+
+const clans = {
+  'Synergy': '809R8PG8',
+  'Synergy Fusion': '8URQ0UR8',
+  'Synergy Union': '8VVGG08G',
+  'Synergy Rising': 'P9UY2Y0U',
+  'Synergy Wrath': '9UG8LG0U',
+  'Synergy Reborn': '9LYPC809'
+};
 
 playerRouter
   .route('/')
@@ -27,6 +32,91 @@ playerRouter
   });
 
 playerRouter
+  .route('/clan/:clan_tag')
+  .get( (req, res, next) => {
+    RemoteService.getClanPlayers(req.params.clan_tag)
+      .then(response => response.json())
+      .then(members => {
+        return members.items.map(member => member.tag.split('#')[1]);
+      })
+      .then(memberTags => {
+        console.log(memberTags);
+        PlayerService.getPlayersStats(req.app.get('db'), memberTags)
+          .then(data => {
+            res.json(data);
+          });
+      });
+  });
+
+playerRouter
+  .route('/remote/:clan_tag')
+  .get( (req, res, next) => {
+    PlayerService.getRemotePlayerTags(req.params.clan_tag)
+      .then(playerTags => res.json(playerTags));
+  });
+
+playerRouter
+  .route('/update')
+  .get( (req, res, next) => {
+    let clanTags = Object.keys(clans).map(clan => clans[clan]);
+    RemoteService.getClansPlayers(clanTags)
+      .then(results => Promise.all(results.map(response => response.json())))
+      .then(allPlayers => {
+        let playerTags = [];
+        allPlayers.forEach(clan => {
+          clan.items.forEach(player => {
+            playerTags.push(player.tag.split('#')[1]);
+          });
+        });
+        let current = 0;
+        let completed = 0;
+        const normalizedPlayers = [];
+        const queue = setInterval(() => {
+          RemoteService.getPlayer(playerTags[current])
+            .then(response => response.json())
+            .then(player => {
+              let playerCardPercs = getPlayerPercentages(player.cards);
+              let currentPlayer = {
+                id: player.tag.split('#')[1],
+                tag: player.tag.split('#')[1],
+                name: player.name,
+                role: player.role,
+                war_day_wins: player.warDayWins,
+                legendary_perc: playerCardPercs[0],
+                gold_perc: playerCardPercs[1],
+                clan_tag: player.clan.tag.split('#')[1],
+                exp_level: player.expLevel,
+                trophies: player.trophies,
+                best_trophies: player.bestTrophies,
+                donations: player.donations,
+                donations_received: player.donationsReceived,
+                clan_cards_collected: player.clanCardsCollected,
+                favorite_card: player.currentFavouriteCard.id,
+                star_points: player.starPoints,
+                war_streak: null
+              };
+              normalizedPlayers.push(currentPlayer);
+              completed += 1;
+              console.log(`Completed ${completed} of ${playerTags.length - 1}`);
+              if ( completed >= playerTags.length - 1 ) {
+                PlayerService.updatePlayers(req.app.get('db'), normalizedPlayers)
+                  .then(response => res.json(response));
+              };
+            })
+            .catch(err => {
+              console.log(err);
+              completed += 1;
+              next();
+            });
+          current += 1;
+          if ( current >= playerTags.length - 1 ) {
+            clearInterval(queue);
+          }
+        }, 50);
+      })
+  });
+
+playerRouter
   .route('/:player_tag')
   .get( (req, res, next) => {
     let response = { data: {}};
@@ -35,70 +125,5 @@ playerRouter
       .then(playerData => playerData.json())
       .then(data => res.json(data))
   });
-
-
-    // const clanTag = req.params.clan_tag;
-    // WarService.getRemoteWars(clanTag)
-    //   .then(response => response.json())
-    //   .then(warlog => {
-    //     const warsArr = warlog.items;
-    //     const normalizeWars = [];
-    //     const normalizePlayers = [];
-    //     warsArr.forEach(war => {
-    //       const ourClan = war.standings.find(clan => clan.clan.tag === `#${clanTag}`);
-    //       const placement = war.standings.findIndex(clan => clan.clan.tag === `#${clanTag}`);
-    //       const newWar = {
-    //         id: war.createdDate,
-    //         season_id: war.seasonId,
-    //         participants: war.participants.length,
-    //         placement: placement,
-    //         clan_tag: clanTag,
-    //         trophy_change: ourClan.trophyChange,
-    //         wins: ourClan.clan.wins,
-    //         battles_played: ourClan.clan.battlesPlayed,
-    //         crowns: ourClan.clan.crowns,
-    //         clan_tag: clanTag
-    //       };
-    //       normalizeWars.push(newWar);
-          
-    //       // Get all player info into separate table
-    //       war.participants.forEach(player => {
-    //         let playerTag = player.tag.split('#')[1];
-    //         const newPlayer = {
-    //           id: war.createdDate + "_" + playerTag,
-    //           war_id: war.createdDate,
-    //           tag: playerTag,
-    //           name: player.name,
-    //           cards_earned: player.cardsEarned,
-    //           battles_played: player.battlesPlayed,
-    //           wins: player.wins,
-    //           collection_day_battles_played: player.collectionDayBattlesPlayed,
-    //           number_of_battles: player.numberOfBattles
-    //         };
-    //         normalizePlayers.push(newPlayer);
-    //       });
-          
-    //     });
-
-    //     WarService.addWars(
-    //       knexInst,
-    //       normalizeWars
-    //     )
-    //       .then((warRows) => {
-    //         WarService.addPlayers(
-    //           knexInst,
-    //           normalizePlayers
-    //         )
-    //           .then((playerRows) => {
-    //             let response = {
-    //               success: true,
-    //               warRows: warRows.rowCount,
-    //               playerRowCount: playerRows.rowCount
-    //             };
-    //             return res.status(201).send(response);
-    //           })
-    //       });
-    //   });
-  // });
 
 module.exports = playerRouter;

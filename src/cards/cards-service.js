@@ -1,8 +1,6 @@
-const { BASE_URL, ROYALE_API_KEY } = require('../config');
-const fetch = require('node-fetch');
 const CardsService = {
 
-  // DATABASE
+  // Return all cards from database
   getCards: (db) => {
     return (
       db
@@ -11,34 +9,19 @@ const CardsService = {
     );
   },
 
-  truncateCards: (db) => {
+  // Upsert all cards
+  updateCards: (db, cards) => {
+    let query = db.insert(cards).into('cards');
+    query += ` ON CONFLICT (id) DO UPDATE SET
+      name=EXCLUDED.name,
+      max_level=EXCLUDED.max_level,
+      icon_url=EXCLUDED.icon_url
+    RETURNING *;`;
     return (
-      db.raw(`TRUNCATE TABLE cards`)
-    );
-  },
-
-  addCards: (db, cards) => {
-    return (
-      db
-        .insert(cards)
-        .into('cards')
-        .returning('*')
-    );
-  },
-
-  // REMOTE API
-  getRemoteCards: () => {
-    let fetchUrl = BASE_URL + "/cards";
-    return (
-      fetch(fetchUrl, {
-        method: 'GET',
-        headers: {
-          'Authorization': 'Bearer ' + process.env.ROYALE_API_KEY,
-          'Content-Type': 'application/json'
-        }
-      })
+      db.raw(query)
     );
   }
+  
 }
 
 module.exports = CardsService;
