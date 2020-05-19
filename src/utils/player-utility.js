@@ -13,6 +13,17 @@ const getPlayerPercentages = (cards) => {
   return [(legCount / cardCount), (goldCount / cardCount)];
 };
 
+const getPlayerTags = (clans) => {
+  const playerTags = [];
+  clans.forEach(clan => {
+    clan.items.forEach(player => {
+      playerTags.push(player.tag.split('#')[1]);
+    });
+  });
+  return playerTags;
+};
+
 module.exports = {
-  getPlayerPercentages
+  getPlayerPercentages,
+  getPlayerTags
 };

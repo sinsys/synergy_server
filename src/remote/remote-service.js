@@ -1,6 +1,6 @@
-const { BASE_URL, ROYALE_API_KEY } = require('../config');
+require('dotenv').config();
+const { BASE_URL } = require('../config');
 const fetch = require('node-fetch');
-
 const RemoteService = {
 
   headers: {
