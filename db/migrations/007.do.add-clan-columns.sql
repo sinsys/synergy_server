@@ -1,0 +1,3 @@
+ALTER TABLE clans
+  ADD COLUMN type TEXT DEFAULT 'pending',
+  ADD COLUMN badge_id INTEGER DEFAULT 0;

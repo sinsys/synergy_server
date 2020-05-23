@@ -40,7 +40,6 @@ playerRouter
         return members.items.map(member => member.tag.split('#')[1]);
       })
       .then(memberTags => {
-        console.log(memberTags);
         PlayerService.getPlayersStats(req.app.get('db'), memberTags)
           .then(data => {
             res.json(data);
@@ -97,7 +96,6 @@ playerRouter
               };
               normalizedPlayers.push(currentPlayer);
               completed += 1;
-              console.log(`Completed ${completed} of ${playerTags.length - 1}`);
               if ( completed >= playerTags.length - 1 ) {
                 PlayerService.updatePlayers(req.app.get('db'), normalizedPlayers)
                   .then(response => res.json(response));

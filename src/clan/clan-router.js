@@ -38,7 +38,9 @@ clanRouter
                 required_trophies: clan.requiredTrophies,
                 donations_per_week: clan.donationsPerWeek,
                 members: clan.members,
-                avg_war_placement: null
+                avg_war_placement: null,
+                type: clan.type,
+                badge_id: clan.badgeId
               };
               normalizeClans.push(clanData);
             });

@@ -32,7 +32,9 @@ const ClanService = {
       required_trophies=EXCLUDED.required_trophies,
       donations_per_week=EXCLUDED.donations_per_week,
       members=EXCLUDED.members,
-      avg_war_placement=EXCLUDED.avg_war_placement
+      avg_war_placement=EXCLUDED.avg_war_placement,
+      type=EXCLUDED.type,
+      badge_id=EXCLUDED.badge_id
     RETURNING *;`;
     return (
       db.raw(query)

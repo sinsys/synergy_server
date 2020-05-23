@@ -28,7 +28,9 @@ const normalizeClans = (clans) => {
       required_trophies: clan.requiredTrophies,
       donations_per_week: clan.donationsPerWeek,
       members: clan.members,
-      avg_war_placement: null
+      avg_war_placement: null,
+      badge_id: clan.badgeId,
+      type: clan.type
     };
     normalizedClans.push(clanData);
   });
