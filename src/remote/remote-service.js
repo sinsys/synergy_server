@@ -73,7 +73,6 @@ const RemoteService = {
       fetch(fetchUrl, RemoteService.headers)
     );
   }
-
 }
 
 module.exports = RemoteService;

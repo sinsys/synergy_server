@@ -32,6 +32,7 @@ const normalizeClans = (clans) => {
       badge_id: clan.badgeId,
       type: clan.type
     };
+    clanData.member_tags = clan.memberList.map(member => member.tag.split('#')[1]);
     normalizedClans.push(clanData);
   });
   return normalizedClans;

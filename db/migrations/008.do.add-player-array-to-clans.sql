@@ -1,0 +1,2 @@
+ALTER TABLE clans
+  ADD COLUMN member_tags TEXT ARRAY;

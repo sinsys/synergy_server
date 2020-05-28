@@ -26,9 +26,15 @@ playerRouter
 playerRouter
   .route('/all')
   .get( (req, res, next) => {
-    PlayerService.getPlayers(req.app.get('db'))
-      .then(playersData => playersData.map(player => player.tag))
-      .then(data => res.json(data));
+    const knexInst = req.app.get('db');
+    ClanService.getClans(knexInst)
+      .then(clans => {
+        let memberTags = clans.reduce((acc, cur) => {
+          return acc.concat(cur.member_tags);
+        },[]);
+        PlayerService.getPlayersStats(knexInst, memberTags)
+          .then(playersData => res.json(playersData));
+      });
   });
 
 playerRouter
