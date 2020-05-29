@@ -21,6 +21,14 @@ const WarService = {
     );
   },
 
+  getAllWars: (db) => {
+    return (
+      db
+        .from('wars')
+        .select('*')
+    );
+  },
+
   updateWars: (db, wars) => {
     let query = db.insert(wars).into('wars');
     query += ` ON CONFLICT (id) DO NOTHING RETURNING *;`
