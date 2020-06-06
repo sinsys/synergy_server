@@ -72,6 +72,13 @@ const RemoteService = {
     return (
       fetch(fetchUrl, RemoteService.headers)
     );
+  },
+
+  getPlayersBattleLogs: (tags) => {
+    let fetchUrls = tags.map(tag => `${BASE_URL}/players/%23${tag}/battlelog`);
+    return (
+      Promise.all(fetchUrls.map(fetchUrl => fetch(fetchUrl, RemoteService.headers)))
+    );
   }
 }
 

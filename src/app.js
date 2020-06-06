@@ -15,6 +15,7 @@ const warRouter = require('./war/war-router');
 const playerRouter = require('./players/player-router');
 const clanRouter = require('./clan/clan-router');
 const remoteRouter = require('./remote/remote-router');
+const warDeckRouter = require('./war/war-deck-router');
 
 const app = express();
 
@@ -38,6 +39,7 @@ app.use('/api/wars', warRouter);
 app.use('/api/players', playerRouter);
 app.use('/api/clans', clanRouter);
 app.use('/api/remote', remoteRouter);
+app.use('/api/wardecks', warDeckRouter);
 
 errorHandler = (err, req, res, next) => {
   let response;
