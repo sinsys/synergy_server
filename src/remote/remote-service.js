@@ -39,6 +39,13 @@ const RemoteService = {
     );
   },
 
+  getCurrentClanWars: (tags) => {
+    let fetchUrls = tags.map(tag => `${BASE_URL}/clans/%23${tag}/currentwar`)
+    return (
+      Promise.all(fetchUrls.map(fetchUrl => fetch(fetchUrl, RemoteService.headers)))
+    );
+  },
+
   getCurrentWarlog: (tag) => {
     let fetchUrl = `${BASE_URL}/clans/%23${tag}/currentwar`;
     return (
@@ -74,10 +81,10 @@ const RemoteService = {
     );
   },
 
-  getPlayersBattleLogs: (tags) => {
-    let fetchUrls = tags.map(tag => `${BASE_URL}/players/%23${tag}/battlelog`);
+  getPlayerBattleLogs: (tag) => {
+    let fetchUrl = `${BASE_URL}/players/%23${tag}/battlelog`;
     return (
-      Promise.all(fetchUrls.map(fetchUrl => fetch(fetchUrl, RemoteService.headers)))
+      fetch(fetchUrl, RemoteService.headers)
     );
   }
 }

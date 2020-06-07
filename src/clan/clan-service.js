@@ -35,7 +35,10 @@ const ClanService = {
       avg_war_placement=EXCLUDED.avg_war_placement,
       type=EXCLUDED.type,
       badge_id=EXCLUDED.badge_id,
-      member_tags=EXCLUDED.member_tags
+      member_tags=EXCLUDED.member_tags,
+      war_status=EXCLUDED.war_status,
+      war_end=EXCLUDED.war_end,
+      collection_end=EXCLUDED.collection_end
     RETURNING *;`;
     return (
       db.raw(query)

@@ -17,6 +17,7 @@ const WarDeckService = {
         .from('war_decks')
         .select('*')
         .where('clan_tag', tag)
+        .andWhere('battle_time', '>=', db.raw(`now() - (?*'1 HOUR'::INTERVAL)`, [24]))
     );
   },
 

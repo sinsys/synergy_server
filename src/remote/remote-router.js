@@ -87,15 +87,12 @@ remoteRouter
           .then(results => Promise.all(results.map(result => result.json())))
           .then(battleLogs => {
             let warDecks = [];
+            let currentTime = new Date();
             battleLogs.forEach(playerLog => {
               playerLog.forEach(battle => {
                 let oneDay = 1000 * 60 * 60 * 24;
-                let battleTimeDiff = new Date() - makeWarDate(battle.battleTime);
-                
-                if (
-                  battle.type === 'clanWarWarDay' && 
-                  battleTimeDiff <= oneDay
-                ) {
+                let validBattle = currentTime - makeWarDate(battle.battleTime) <= oneDay;
+                if (battle.type === 'clanWarWarDay' && validBattle) {
                   let warDeck = {
                     id: battle.battleTime + "_" + battle.team[0].tag.split('#')[1],
                     name: battle.team[0].name,

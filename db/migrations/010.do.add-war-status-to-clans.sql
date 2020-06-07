@@ -1,0 +1,4 @@
+ALTER TABLE clans
+  ADD COLUMN war_status TEXT DEFAULT null,
+  ADD COLUMN war_end TIMESTAMPTZ DEFAULT null,
+  ADD COLUMN collection_end TIMESTAMPTZ DEFAULT null;
