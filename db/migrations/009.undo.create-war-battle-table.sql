@@ -1,1 +1,1 @@
-DROP TABLE war_decks;
+DROP TABLE IF EXISTS war_decks;

@@ -11,7 +11,7 @@ const WarDeckService = {
     );
   },
 
-  getWarDecks: (db, tag) => {
+  getClanWarDecks: (db, tag) => {
     return (
       db
         .from('war_decks')
@@ -21,6 +21,15 @@ const WarDeckService = {
     );
   },
 
+  getAllWarDecks: (db) => {
+    return (
+      db
+        .from('war_decks')
+        .select('*')
+        .where('battle_time', '>=', db.raw(`now() - (?*'1 HOUR'::INTERVAL)`, [24]))
+    );
+  },
+  
   // Insert all war decks
   updateWarDecks: (db, decks) => {
     let query = db.insert(decks).into('war_decks');

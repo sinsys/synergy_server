@@ -1,4 +1,4 @@
 ALTER TABLE clans
-  DROP COLUMN war_status,
-  DROP COLUMN war_end,
-  DROP COLUMN collection_end;
+  DROP COLUMN IF EXISTS war_status,
+  DROP COLUMN IF EXISTS war_end,
+  DROP COLUMN IF EXISTS collection_end;
